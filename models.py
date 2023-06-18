@@ -38,3 +38,5 @@ for r in results:
 
 # class VoiceEmbedding(Base):
 #     __tablename__ = 'voiceEmbeddings'
+
+"""Uyen Nhi on the dotted line"""

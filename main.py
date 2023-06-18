@@ -5,6 +5,8 @@ import os
 from PIL import Image
 from tkinter import filedialog
 
+from voicerecognizer.enroll_speaker import get_voiceprint
+
 class App(customtkinter.CTk):
     width = 900
     height = 600
@@ -45,7 +47,7 @@ class App(customtkinter.CTk):
         #enrolling variables
         self.enroll_frame_speaker_name = None
         self.enroll_frame_speaker_id = None
-        self.enroll_frame_audio_files = []
+        self.enroll_frame_audio_files = set()
         
         self.enroll_frame_entry_name = customtkinter.CTkEntry(master=self.enroll_frame, placeholder_text="Speaker name")
         self.enroll_frame_entry_name.grid(row=1, column=0, columnspan=2, padx=20,pady=(90,0), sticky='nsew')
@@ -82,8 +84,9 @@ class App(customtkinter.CTk):
     
     """Event nhấn button upload *.flac files"""
     def enroll_frame_upload_enroll_files(self):
-        self.enroll_frame_audio_files.extend(filedialog.askopenfilenames(filetypes=[("FLAC files", '*.flac')]))
-        print("selected files:",self.enroll_frame_audio_files)
+        files = filedialog.askopenfilenames(filetypes=[("FLAC files", '*.flac')])
+        self.enroll_frame_audio_files |= set(files)
+        # print("selected files:",self.enroll_frame_audio_files)
         
     """Event nhấn submit để start enrolling"""
     def enroll_frame_submit_enroll_user(self):
@@ -106,11 +109,11 @@ class App(customtkinter.CTk):
         self.enroll_frame_upload_error.configure(text='')
         print('Name:',self.enroll_frame_speaker_name)
         print('Speaker Id:', self.enroll_frame_speaker_id)
-        print('Utterances\' path:', self.enroll_frame_audio_files)
+        get_voiceprint(self.enroll_frame_audio_files)
 
-        
         
 if __name__ == "__main__":
     app = App()
     app.mainloop()
     
+"""Uyen Nhi on the dotted line"""
