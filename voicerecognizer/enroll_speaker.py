@@ -16,10 +16,10 @@ def get_voiceprint(utterances_arr,results, callback_=None):
     
     classify_results = k_means_clustering(embeddings, kmeans_)
     mean_vecs = get_means(embeddings, classify_results, kmeans_)
-    results.append(mean_vecs)
+    for item in mean_vecs:
+        results.append(item)
     if callback_ is not None:
         callback_()
-    print('Results:',results)
     # return mean_vecs
     
 """phân loại giọng nói của speaker vào 5 cluster"""        

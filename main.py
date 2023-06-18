@@ -6,8 +6,10 @@ import concurrent.futures
 from PIL import Image
 from tkinter import filedialog
 import threading, queue, time
-
+import uuid
 from voicerecognizer.enroll_speaker import get_voiceprint
+from mydatabase import crud
+from mydatabase.models import Being, EmbeddingVector, Session, engine
 
 class App(customtkinter.CTk):
     width = 900
@@ -49,7 +51,9 @@ class App(customtkinter.CTk):
         #enrolling variables
         self.enroll_frame_speaker_name = None
         self.enroll_frame_speaker_id = None
+        self.enroll_frame_speaker_ssn = None
         self.enroll_frame_audio_files = set()
+        self.enroll_frame_clustering_results = []
         
         self.enroll_frame_entry_name = customtkinter.CTkEntry(master=self.enroll_frame, placeholder_text="Speaker name")
         self.enroll_frame_entry_name.grid(row=1, column=0, columnspan=2, padx=20,pady=(90,0), sticky='nsew')
@@ -118,14 +122,8 @@ class App(customtkinter.CTk):
         print('Name:',self.enroll_frame_speaker_name)
         print('Speaker Id:', self.enroll_frame_speaker_id)
         
-        results =None
-        # with concurrent.futures.ThreadPoolExecutor() as executor:
-        #     future = executor.submit(get_voiceprint, self.enroll_frame_audio_files)
-        #     results = future.result()
-        # self.enroll_frame_enroll_msg.configure(text='Speaker is enrolled successfully')
         
-        results = []
-        my_thread = threading.Thread(target=get_voiceprint,args=[self.enroll_frame_audio_files,results,
+        my_thread = threading.Thread(target=get_voiceprint,args=[self.enroll_frame_audio_files,self.enroll_frame_clustering_results,
                                                                  self.enroll_frame_on_done_submit]) #enroll_frame_on_done_submit là hàm callback
         my_thread.start()
         
@@ -137,6 +135,11 @@ class App(customtkinter.CTk):
     def enroll_frame_on_done_submit(self):
         self.enroll_frame_upload_button.configure(state="normal")
         self.enroll_frame_submit_enroll_button.configure(state="normal")
+        self.enroll_frame_speaker_ssn = str(uuid.uuid4())
+        crud.createBeing(name=self.enroll_frame_speaker_name, speaker_id=self.enroll_frame_speaker_id, ssn=self.enroll_frame_speaker_ssn)
+        crud.createEmbedding(embeddings=self.enroll_frame_clustering_results, speaker_ssn = self.enroll_frame_speaker_ssn)
+        print(self.enroll_frame_speaker_ssn)
+        
 
 if __name__ == "__main__":
     app = App()
