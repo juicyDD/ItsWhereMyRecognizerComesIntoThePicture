@@ -2,8 +2,10 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 import os
+import threading
 from PIL import Image
 from tkinter import filedialog
+from multiprocessing.pool import ThreadPool
 
 from voicerecognizer.enroll_speaker import get_voiceprint
 
@@ -35,7 +37,7 @@ class App(customtkinter.CTk):
                                                              compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
         
-        self.enroll_user_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Home",
+        self.enroll_user_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Enroll new speaker",
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                    image=self.enroll_user_image, anchor="w", command=self.enroll_user_button_event)
         self.enroll_user_button.grid(row=1, column=0, sticky="ew")
@@ -109,9 +111,17 @@ class App(customtkinter.CTk):
         self.enroll_frame_upload_error.configure(text='')
         print('Name:',self.enroll_frame_speaker_name)
         print('Speaker Id:', self.enroll_frame_speaker_id)
-        get_voiceprint(self.enroll_frame_audio_files)
+        self.enroll_frame_upload_button.configure(state="disabled")
+        self.enroll_frame_submit_enroll_button.configure(state="disabled")
+        with ThreadPool() as pool:
+            result = pool.apply_async(get_voiceprint(self.enroll_frame_audio_files),
+                                      callback = self.enroll_frame_on_done_submit())
 
-        
+
+    def enroll_frame_on_done_submit(self):
+        self.enroll_frame_upload_button.configure(state="normal")
+        self.enroll_frame_submit_enroll_button.configure(state="normal")
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
