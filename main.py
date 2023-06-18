@@ -45,7 +45,7 @@ class App(customtkinter.CTk):
         #enrolling variables
         self.enroll_frame_speaker_name = None
         self.enroll_frame_speaker_id = None
-        self.enrolling_audio_files = []
+        self.enroll_frame_audio_files = []
         
         self.enroll_frame_entry_name = customtkinter.CTkEntry(master=self.enroll_frame, placeholder_text="Speaker name")
         self.enroll_frame_entry_name.grid(row=1, column=0, columnspan=2, padx=20,pady=(90,0), sticky='nsew')
@@ -56,14 +56,17 @@ class App(customtkinter.CTk):
         self.enroll_frame_entry_speaker_id.grid(row=3, column=0, columnspan=2, padx=20, pady=(0,20), sticky='nsew')
         
         self.enroll_frame_upload_button = customtkinter.CTkButton(self.enroll_frame, text='Upload audio files', command=self.enroll_frame_upload_enroll_files)
-        self.enroll_frame_upload_button.grid(row=4, column=0, padx=20, pady=10, sticky='nsew')
+        self.enroll_frame_upload_button.grid(row=4, column=0, padx=20, pady=(20,0), sticky='nsew')
+        self.enroll_frame_upload_error = customtkinter.CTkLabel(self.enroll_frame,padx=30,  text="", font=customtkinter.CTkFont(size=10))
+        self.enroll_frame_upload_error.grid(row=5,column=0, sticky='W')
         
         self.enroll_frame_submit_enroll_button = customtkinter.CTkButton(master=self.enroll_frame, text='Enroll', fg_color="transparent", border_width=2, 
                                                             text_color=("gray10", "#DCE4EE"), command=self.enroll_frame_submit_enroll_user)
-        self.enroll_frame_submit_enroll_button.grid(row=5, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.enroll_frame_submit_enroll_button.grid(row=6, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
         # select default frame
         self.select_frame_by_name("enroll")
         
+    """Event switch frame"""
     def select_frame_by_name(self, name):
         # set button color for selected button
         self.enroll_user_button.configure(fg_color=("gray75", "gray25") if name == "enroll" else "transparent")
@@ -76,18 +79,36 @@ class App(customtkinter.CTk):
     def enroll_user_button_event(self):
         self.select_frame_by_name('enroll')
         print('enroll user frame')
+    
+    """Event nhấn button upload *.flac files"""
+    def enroll_frame_upload_enroll_files(self):
+        self.enroll_frame_audio_files.extend(filedialog.askopenfilenames(filetypes=[("FLAC files", '*.flac')]))
+        print("selected files:",self.enroll_frame_audio_files)
+        
+    """Event nhấn submit để start enrolling"""
     def enroll_frame_submit_enroll_user(self):
         self.enroll_frame_speaker_name = self.enroll_frame_entry_name.get()
+        self.enroll_frame_speaker_id = self.enroll_frame_entry_speaker_id.get()
+        invalid_flag = False
+        
         if self.enroll_frame_speaker_name.replace(' ','') == '':
             self.enroll_frame_entry_name_error.configure(text='Speaker name is required ┐ (︶ ▽ ︶) ┌')
+            invalid_flag = True
+            
+        if len(self.enroll_frame_audio_files) == 0:
+            self.enroll_frame_upload_error.configure(text="Speaker's utterances is required ┐ (︶ ▽ ︶) ┌")
+            invalid_flag = True
+            
+        if invalid_flag:
             return
-        self.enroll_frame_entry_name_error.configure(text='')
         
-        self.enroll_frame_speaker_id = self.enroll_frame_entry_speaker_id.get()
-    def enroll_frame_upload_enroll_files(self):
-        selected_files = filedialog.askopenfilenames(filetypes=[("FLAC files", '*.flac')])
-        print(selected_files)
-        print('upload enroll files')
+        self.enroll_frame_entry_name_error.configure(text='')
+        self.enroll_frame_upload_error.configure(text='')
+        print('Name:',self.enroll_frame_speaker_name)
+        print('Speaker Id:', self.enroll_frame_speaker_id)
+        print('Utterances\' path:', self.enroll_frame_audio_files)
+
+        
         
 if __name__ == "__main__":
     app = App()
