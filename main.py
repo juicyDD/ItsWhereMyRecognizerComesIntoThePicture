@@ -4,7 +4,7 @@ import customtkinter
 import os
 import concurrent.futures
 from PIL import Image
-from tkinter import filedialog
+from tkinter import filedialog, StringVar
 import threading, queue, time
 import uuid
 from voicerecognizer.enroll_speaker import get_voiceprint
@@ -55,6 +55,7 @@ class App(customtkinter.CTk):
         self.enroll_frame_audio_files = set()
         self.enroll_frame_clustering_results = []
         
+
         self.enroll_frame_entry_name = customtkinter.CTkEntry(master=self.enroll_frame, placeholder_text="Speaker name")
         self.enroll_frame_entry_name.grid(row=1, column=0, columnspan=2, padx=20,pady=(90,0), sticky='nsew')
         self.enroll_frame_entry_name_error = customtkinter.CTkLabel(self.enroll_frame,padx=30,  text="", font=customtkinter.CTkFont(size=10))
@@ -135,12 +136,22 @@ class App(customtkinter.CTk):
     def enroll_frame_on_done_submit(self):
         self.enroll_frame_upload_button.configure(state="normal")
         self.enroll_frame_submit_enroll_button.configure(state="normal")
+        self.enroll_frame_enroll_msg.configure(text='Speaker successfully enrolled')
         self.enroll_frame_speaker_ssn = str(uuid.uuid4())
         crud.createBeing(name=self.enroll_frame_speaker_name, speaker_id=self.enroll_frame_speaker_id, ssn=self.enroll_frame_speaker_ssn)
         crud.createEmbedding(embeddings=self.enroll_frame_clustering_results, speaker_ssn = self.enroll_frame_speaker_ssn)
         print(self.enroll_frame_speaker_ssn)
+        self.enroll_frame_reset_data()
         
+    '''Reset data sau khi update thành công'''
+    def enroll_frame_reset_data(self):
+        self.enroll_frame_speaker_name = None
+        self.enroll_frame_speaker_id = None
+        self.enroll_frame_speaker_ssn = None
+        self.enroll_frame_audio_files = set()
+        self.enroll_frame_clustering_results = []
 
+    
 if __name__ == "__main__":
     app = App()
     app.mainloop()
