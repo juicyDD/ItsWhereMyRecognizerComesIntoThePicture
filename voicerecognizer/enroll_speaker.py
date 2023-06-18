@@ -26,19 +26,20 @@ def k_means_clustering(embeddings, k=5):
 
 def get_means(embeddings, classify_results, num_k):
     means = []
+    print(len(embeddings),len(embeddings[0]))
     for i in range(num_k):
         print('Mean voiceprint of cluster',i,":")
         indices = np.argwhere(classify_results==i)
         indices = np.squeeze(indices)
         embeddings_by_cluster = np.array(embeddings)[indices].reshape(128,-1)
         mean_vec = np.mean(embeddings_by_cluster, axis=1)
-        print(mean_vec)
+        # print(mean_vec)
         means.append(mean_vec)
         # print(np.mean(embeddings_by_cluster, axis=1).shape)
         # vector_mean = np.mean(np.array(embeddings)[indices])
         # means.append(vector_mean)
     # print(means)
-    # return means
+    return means
         
 # encoder = my_neural_network.MyEncoder()
     

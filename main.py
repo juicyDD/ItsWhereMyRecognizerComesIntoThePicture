@@ -3,6 +3,7 @@ import tkinter.messagebox
 import customtkinter
 import os
 import threading
+import concurrent.futures
 from PIL import Image
 from tkinter import filedialog
 from multiprocessing.pool import ThreadPool
@@ -113,10 +114,17 @@ class App(customtkinter.CTk):
         print('Speaker Id:', self.enroll_frame_speaker_id)
         self.enroll_frame_upload_button.configure(state="disabled")
         self.enroll_frame_submit_enroll_button.configure(state="disabled")
-        with ThreadPool() as pool:
-            result = pool.apply_async(get_voiceprint(self.enroll_frame_audio_files),
-                                      callback = self.enroll_frame_on_done_submit())
-
+        results =None
+        # threading.Thread(target=get_voiceprint(self.enroll_frame_audio_files)).start()
+        # with ThreadPool(processes=1) as pool:
+        #     results=pool.apply_async(get_voiceprint(self.enroll_frame_audio_files)) 
+        # self.enroll_frame_on_done_submit()
+        # results = [r.get() for r in results]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(get_voiceprint, self.enroll_frame_audio_files)
+            results = future.result()
+        print(results)
+        
 
     def enroll_frame_on_done_submit(self):
         self.enroll_frame_upload_button.configure(state="normal")
