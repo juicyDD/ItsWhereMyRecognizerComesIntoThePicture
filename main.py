@@ -2,11 +2,10 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 import os
-import threading
 import concurrent.futures
 from PIL import Image
 from tkinter import filedialog
-from multiprocessing.pool import ThreadPool
+import threading, queue, time
 
 from voicerecognizer.enroll_speaker import get_voiceprint
 
@@ -67,7 +66,9 @@ class App(customtkinter.CTk):
         
         self.enroll_frame_submit_enroll_button = customtkinter.CTkButton(master=self.enroll_frame, text='Enroll', fg_color="transparent", border_width=2, 
                                                             text_color=("gray10", "#DCE4EE"), command=self.enroll_frame_submit_enroll_user)
-        self.enroll_frame_submit_enroll_button.grid(row=6, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.enroll_frame_submit_enroll_button.grid(row=6, column=2, padx=(20, 20), pady=(20, 0), sticky="nsew")
+        self.enroll_frame_enroll_msg = customtkinter.CTkLabel(self.enroll_frame,padx=30,  text="", font=customtkinter.CTkFont(size=10))
+        self.enroll_frame_enroll_msg.grid(row=7,column=2, sticky='W')
         # select default frame
         self.select_frame_by_name("enroll")
         
@@ -107,24 +108,31 @@ class App(customtkinter.CTk):
             
         if invalid_flag:
             return
+        self.enroll_frame_upload_button.configure(state="disabled")
+        self.enroll_frame_submit_enroll_button.configure(state="disabled")
         
         self.enroll_frame_entry_name_error.configure(text='')
         self.enroll_frame_upload_error.configure(text='')
+        self.enroll_frame_enroll_msg.configure(text='')
+
         print('Name:',self.enroll_frame_speaker_name)
         print('Speaker Id:', self.enroll_frame_speaker_id)
-        self.enroll_frame_upload_button.configure(state="disabled")
-        self.enroll_frame_submit_enroll_button.configure(state="disabled")
-        results =None
-        # threading.Thread(target=get_voiceprint(self.enroll_frame_audio_files)).start()
-        # with ThreadPool(processes=1) as pool:
-        #     results=pool.apply_async(get_voiceprint(self.enroll_frame_audio_files)) 
-        # self.enroll_frame_on_done_submit()
-        # results = [r.get() for r in results]
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future = executor.submit(get_voiceprint, self.enroll_frame_audio_files)
-            results = future.result()
-        print(results)
         
+        results =None
+        # with concurrent.futures.ThreadPoolExecutor() as executor:
+        #     future = executor.submit(get_voiceprint, self.enroll_frame_audio_files)
+        #     results = future.result()
+        # self.enroll_frame_enroll_msg.configure(text='Speaker is enrolled successfully')
+        
+        results = []
+        my_thread = threading.Thread(target=get_voiceprint,args=[self.enroll_frame_audio_files,results,
+                                                                 self.enroll_frame_on_done_submit]) #enroll_frame_on_done_submit là hàm callback
+        my_thread.start()
+        
+        # while my_thread.is_alive():
+        #     time.sleep(0.1)
+        # print('ress',results)
+        # self.enroll_frame_on_done_submit()
 
     def enroll_frame_on_done_submit(self):
         self.enroll_frame_upload_button.configure(state="normal")

@@ -1,7 +1,7 @@
 from . import my_neural_network, features_extraction, inference
 from sklearn.cluster import KMeans
 import numpy as np
-def get_voiceprint(utterances_arr):
+def get_voiceprint(utterances_arr,results, callback_=None):
     kmeans_ = len(utterances_arr) if len(utterances_arr) < 5 else 5
     encoder = my_neural_network.MyEncoder().encoder
     embeddings = []
@@ -16,7 +16,11 @@ def get_voiceprint(utterances_arr):
     
     classify_results = k_means_clustering(embeddings, kmeans_)
     mean_vecs = get_means(embeddings, classify_results, kmeans_)
-    return mean_vecs
+    results.append(mean_vecs)
+    if callback_ is not None:
+        callback_()
+    print('Results:',results)
+    # return mean_vecs
     
 """phân loại giọng nói của speaker vào 5 cluster"""        
 def k_means_clustering(embeddings, k=5):
@@ -26,9 +30,9 @@ def k_means_clustering(embeddings, k=5):
 
 def get_means(embeddings, classify_results, num_k):
     means = []
-    print(len(embeddings),len(embeddings[0]))
+    # print(len(embeddings),len(embeddings[0]))
     for i in range(num_k):
-        print('Mean voiceprint of cluster',i,":")
+        # print('Mean voiceprint of cluster',i,":")
         indices = np.argwhere(classify_results==i)
         indices = np.squeeze(indices)
         embeddings_by_cluster = np.array(embeddings)[indices].reshape(128,-1)
