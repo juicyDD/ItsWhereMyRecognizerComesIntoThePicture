@@ -1,6 +1,7 @@
 import customtkinter
 import os
 from PIL import Image
+from mydatabase import crud
 class ScrollableLabelButtonFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, command=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -32,6 +33,8 @@ class ScrollableLabelButtonFrame(customtkinter.CTkScrollableFrame):
                 self.label_list.remove(label)
                 self.button_list.remove(button)
                 self.ssn_list.remove(ssn)
+                crud.deleteBeing(ssn)
+                crud.deleteEmbeddingsBySSn(ssn)
                 return
 
         

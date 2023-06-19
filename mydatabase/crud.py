@@ -12,13 +12,6 @@ def getAllBeings():
     beings = local_session.query(Being).all()
     return beings
 def createEmbedding(embeddings, speaker_ssn):
-    
-    # _ = local_session.query(EmbeddingVector).filter(EmbeddingVector.speaker_ssn==speaker_ssn).all()
-    
-    # '''Nếu embedding của speaker này đã có trong db thì drop trước khi lưu các cluster mới vào db'''
-    # if _ is not None:
-    #     local_session.delete(_)
-    #     local_session.commit()
     i=1
     local_session = Session(bind=engine)
     
@@ -30,7 +23,19 @@ def createEmbedding(embeddings, speaker_ssn):
     
         print('Added successfully',i)
         i+=1
+
+def deleteBeing(ssn):
+    local_session=Session(bind=engine)
+    item_to_delete=local_session.query(Being).filter(Being.ssn==ssn).first()
+    local_session.delete(item_to_delete)
+    local_session.commit()   
     
+def deleteEmbeddingsBySSn(ssn):
+    local_session=Session(bind=engine)
+    embs_to_delete=local_session.query(EmbeddingVector).filter(EmbeddingVector.speaker_ssn==ssn)
+    for emb in embs_to_delete:
+        local_session.delete(emb)
+    local_session.commit()
 def arrayToString(embedding):
     embeddingstr = ''
     for _ in embedding:
