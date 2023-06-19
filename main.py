@@ -51,7 +51,11 @@ class App(customtkinter.CTk):
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                    image=self.recognizer_image, anchor="w", command = self.recognizer_button_event)
         self.recognizer_button.grid(row=2, column=0, sticky="ew")
+        self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Dark", "Light", "System"],
+                                                                command=self.change_appearance_mode_event)
+        self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
         
+        '''============== FIRST FRAME CODE REGION =============='''    
         # create home frame
         self.enroll_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.enroll_frame.grid_columnconfigure(0, weight=1)
@@ -88,12 +92,21 @@ class App(customtkinter.CTk):
         self.beings = crud.getAllBeings()
         for being in self.beings:  # add items with images
             self.enroll_frame_scrollable_label_button_frame.add_item(item=being.name+" ( id: "+being.speaker_id+" )", name=being.name, ssn=being.ssn)
-            
+        
+        '''============== SECOND FRAME CODE REGION =============='''    
         # create second frame
         self.recognizer_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.recognizer_frame.grid_columnconfigure(0, weight=1)
+        self.recognizer_frame.grid_rowconfigure(0,weight=1)
+        self.recognizer_frame.grid_rowconfigure(1,weight=1)
         
-        # self.enroll_frame_table_frame = customtkinter.CTkFrame(self.enroll_frame)
-        # self.enroll_frame_table_frame.grid(row=8,column=0,columnspan=3, rowspan=2,sticky='W')
+        # recognizer variables
+        self.recognizer_frame_recognizing_audio = None
+        
+        self.recognizer_frame_upload_button = customtkinter.CTkButton(self.recognizer_frame, text="Audio to recognize", 
+                                                                      image=self.recognizer_image, compound="left",
+                                                                      command=self.recognizer_frame_upload_button_event)
+        self.recognizer_frame_upload_button.grid(row=1, column=0, padx=20, pady=20,sticky='n')
         # select default frame
         self.select_frame_by_name("enroll")
         
@@ -163,10 +176,6 @@ class App(customtkinter.CTk):
                                                                  self.enroll_frame_on_done_submit]) #enroll_frame_on_done_submit là hàm callback
         my_thread.start()
         
-        # while my_thread.is_alive():
-        #     time.sleep(0.1)
-        # print('ress',results)
-        # self.enroll_frame_on_done_submit()
 
     def enroll_frame_on_done_submit(self):
         self.enroll_frame_upload_button.configure(state="normal")
@@ -197,6 +206,18 @@ class App(customtkinter.CTk):
         rm = msg.get()
         if rm == 'Yes':
             self.enroll_frame_scrollable_label_button_frame.remove_item(ssn)
+            
+    def recognizer_frame_upload_button_event(self):
+        file_ = filedialog.askopenfilename(filetypes=[("FLAC files", '*.flac')])
+        self.recognizer_frame_recognizing_audio = file_
+        print(self.recognizer_frame_recognizing_audio)
+        # self.enroll_frame_audio_files |= set(files)
+        # self.enroll_frame_upload_error.configure(text=f"{len(self.enroll_frame_audio_files)} audio files selected")
+            
+    def change_appearance_mode_event(self, new_appearance_mode):
+        customtkinter.set_appearance_mode(new_appearance_mode)
+
+
         
 
 

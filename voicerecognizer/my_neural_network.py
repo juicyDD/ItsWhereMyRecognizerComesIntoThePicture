@@ -1,5 +1,6 @@
 import os
 from . import nhi_config
+# import nhi_config
 import torch
 import torch.nn as nn 
 #GeForce MX250 => Compute capability = 6.1 => CUDA ver 8.0 => downgrade python xuống 3.6 nhaa

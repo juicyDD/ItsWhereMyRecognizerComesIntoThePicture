@@ -11,6 +11,13 @@ def getAllBeings():
     local_session=Session(bind=engine)
     beings = local_session.query(Being).all()
     return beings
+
+def deleteBeing(ssn):
+    local_session=Session(bind=engine)
+    item_to_delete=local_session.query(Being).filter(Being.ssn==ssn).first()
+    local_session.delete(item_to_delete)
+    local_session.commit()   
+    
 def createEmbedding(embeddings, speaker_ssn):
     i=1
     local_session = Session(bind=engine)
@@ -24,12 +31,11 @@ def createEmbedding(embeddings, speaker_ssn):
         print('Added successfully',i)
         i+=1
 
-def deleteBeing(ssn):
-    local_session=Session(bind=engine)
-    item_to_delete=local_session.query(Being).filter(Being.ssn==ssn).first()
-    local_session.delete(item_to_delete)
-    local_session.commit()   
-    
+def getAllEmbeddings():
+    local_session = Session(bind=engine)
+    embs = local_session.query(EmbeddingVector).all()
+    return embs
+
 def deleteEmbeddingsBySSn(ssn):
     local_session=Session(bind=engine)
     embs_to_delete=local_session.query(EmbeddingVector).filter(EmbeddingVector.speaker_ssn==ssn)

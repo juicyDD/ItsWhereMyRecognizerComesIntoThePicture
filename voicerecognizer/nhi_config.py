@@ -8,7 +8,7 @@ TEST_DATASET_DIR = r"D:\SpeechDataset\test\LibriSpeech\test-clean"
 PRETRAINED_MODEL =''
 # SAVED_MODEL_PATH = '/app/models/saved_model.pt'
 
-SAVED_MODEL_PATH = r"voicerecognizer\models_lstm_mfcc_100k_specaug_batch_8\saved_model.ckpt-50000.pt"
+SAVED_MODEL_PATH = r"voicerecognizer\models_lstm_mfcc_100k_specaug_batch_8\saved_model.pt"
 
 # SAVED_MODEL_PATH = "models\saved_model.pt"
 N_MFCC = 40

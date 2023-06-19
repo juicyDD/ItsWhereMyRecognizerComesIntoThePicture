@@ -2,7 +2,7 @@ import soundfile as sf
 import librosa
 
 from . import nhi_config
-
+# import nhi_config
 
 '''read an arbitrary *.flac file, return waveform and sample rate'''
 def read_audio(audio_dir):

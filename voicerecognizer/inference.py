@@ -2,10 +2,10 @@ import torch
 import numpy as np
 
 from . import features_extraction, nhi_config
+# import features_extraction, nhi_config
 # from base.api.voice_recognizer.my_neural_network import MyEncoder
 
 
-#---get embedding of a single utterance
 def my_inference(features, encoder, is_full_sequence_inference = nhi_config.FULL_SEQUENCE_INFERENCE):
     if is_full_sequence_inference:
         batch_input = torch.unsqueeze(torch.from_numpy(features), dim=0).float().to(nhi_config.DEVICE)

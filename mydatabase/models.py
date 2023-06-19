@@ -26,7 +26,7 @@ class EmbeddingVector(Base):
         self.speaker_ssn = speaker_ssn
     
     def __repr__(self):
-        return f"Speaker id {self.id}: {self.embedding}"
+        return f"Speaker id {self.id_}: {self.embedding}"
 
 class Being(Base):
     __tablename__ = 'beings'

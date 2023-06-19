@@ -15,9 +15,15 @@ def get_voiceprint(utterances_arr,results, callback_=None):
             embeddings.append(embedding)
     
     classify_results = k_means_clustering(embeddings, kmeans_)
-    mean_vecs = get_means(embeddings, classify_results, kmeans_)
-    for item in mean_vecs:
-        results.append(item)
+    temp = np.array(classify_results)
+    for i in range(kmeans_):
+        idx = np.where(temp == i)[0][0]
+        results.append(embeddings[idx])
+        
+        
+    # mean_vecs = get_means(embeddings, classify_results, kmeans_)
+    # for item in mean_vecs:
+    #     results.append(item)
     if callback_ is not None:
         callback_()
     # return mean_vecs
