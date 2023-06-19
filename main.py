@@ -7,10 +7,12 @@ from PIL import Image
 from tkinter import filedialog, StringVar
 import threading, queue, time
 import uuid
+
 from voicerecognizer.enroll_speaker import get_voiceprint
 from mydatabase import crud
 from mydatabase.models import Being, EmbeddingVector, Session, engine
-
+from scrollable_label_button_frame import ScrollableLabelButtonFrame
+from CTkMessagebox import ctkmessagebox
 class App(customtkinter.CTk):
     width = 900
     height = 600
@@ -35,7 +37,7 @@ class App(customtkinter.CTk):
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(4, weight=1)
-        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="  是dd不是弟弟", image=self.logo_image,
+        self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="  soh cah toa", image=self.logo_image,
                                                              compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
         self.navigation_frame_label.grid(row=0, column=0, padx=20, pady=20)
         
@@ -74,6 +76,15 @@ class App(customtkinter.CTk):
         self.enroll_frame_submit_enroll_button.grid(row=6, column=2, padx=(20, 20), pady=(20, 0), sticky="nsew")
         self.enroll_frame_enroll_msg = customtkinter.CTkLabel(self.enroll_frame,padx=30,  text="", font=customtkinter.CTkFont(size=10))
         self.enroll_frame_enroll_msg.grid(row=7,column=2, sticky='W')
+        
+        self.enroll_frame_scrollable_label_button_frame = ScrollableLabelButtonFrame(master=self.enroll_frame,command=self.enroll_frame_delete_button_frame_event, width=800, corner_radius=10) #command=self.label_button_frame_event,
+        self.enroll_frame_scrollable_label_button_frame.grid(row=8, column=0, padx=20, pady=0, sticky="ew")
+        self.beings = crud.getAllBeings()
+        for being in self.beings:  # add items with images
+            self.enroll_frame_scrollable_label_button_frame.add_item(item=being.name, name=being.name, ssn=being.ssn)
+        
+        # self.enroll_frame_table_frame = customtkinter.CTkFrame(self.enroll_frame)
+        # self.enroll_frame_table_frame.grid(row=8,column=0,columnspan=3, rowspan=2,sticky='W')
         # select default frame
         self.select_frame_by_name("enroll")
         
@@ -95,6 +106,7 @@ class App(customtkinter.CTk):
     def enroll_frame_upload_enroll_files(self):
         files = filedialog.askopenfilenames(filetypes=[("FLAC files", '*.flac')])
         self.enroll_frame_audio_files |= set(files)
+        self.enroll_frame_upload_error.configure(text=f"{len(self.enroll_frame_audio_files)} audio files selected")
         # print("selected files:",self.enroll_frame_audio_files)
         
     """Event nhấn submit để start enrolling"""
@@ -140,6 +152,10 @@ class App(customtkinter.CTk):
         self.enroll_frame_speaker_ssn = str(uuid.uuid4())
         crud.createBeing(name=self.enroll_frame_speaker_name, speaker_id=self.enroll_frame_speaker_id, ssn=self.enroll_frame_speaker_ssn)
         crud.createEmbedding(embeddings=self.enroll_frame_clustering_results, speaker_ssn = self.enroll_frame_speaker_ssn)
+        
+        self.enroll_frame_scrollable_label_button_frame.add_item(item=self.enroll_frame_speaker_name, 
+                                                                 name=self.enroll_frame_speaker_name, 
+                                                                 ssn=self.enroll_frame_speaker_ssn)
         print(self.enroll_frame_speaker_ssn)
         self.enroll_frame_reset_data()
         
@@ -151,9 +167,19 @@ class App(customtkinter.CTk):
         self.enroll_frame_audio_files = set()
         self.enroll_frame_clustering_results = []
 
+    def enroll_frame_delete_button_frame_event(self, name,ssn):
+        print(f"{ssn}: {name}")
+        msg = ctkmessagebox.CTkMessagebox(title="Warning Message", message=f"Do you want to remove speaker {name} (ssn: {ssn}) out of database?",
+                   option_1="No", option_2="Yes")
+        rm = msg.get()
+        if rm == 'Yes':
+            self.enroll_frame_scrollable_label_button_frame.remove_item(ssn)
+        
+
+
     
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-    
+
 """Uyen Nhi on the dotted line"""

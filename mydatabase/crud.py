@@ -7,7 +7,10 @@ def createBeing(ssn,name,speaker_id=None):
 
     local_session.commit()
     print('user added')
-
+def getAllBeings():
+    local_session=Session(bind=engine)
+    beings = local_session.query(Being).all()
+    return beings
 def createEmbedding(embeddings, speaker_ssn):
     
     # _ = local_session.query(EmbeddingVector).filter(EmbeddingVector.speaker_ssn==speaker_ssn).all()
