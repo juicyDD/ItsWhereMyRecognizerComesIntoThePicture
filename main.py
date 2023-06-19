@@ -29,6 +29,8 @@ class App(customtkinter.CTk):
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "webpc.png")), size=(50, 50))
         self.enroll_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "enrolluser-light.png")),
                                                  dark_image=Image.open(os.path.join(image_path, "enrolluser-dark.png")), size=(25, 25))
+        self.recognizer_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "recognizer-light.png")),
+                                                 dark_image=Image.open(os.path.join(image_path, "recognizer-dark.png")), size=(25, 25))
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -45,6 +47,10 @@ class App(customtkinter.CTk):
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                    image=self.enroll_user_image, anchor="w", command=self.enroll_user_button_event)
         self.enroll_user_button.grid(row=1, column=0, sticky="ew")
+        self.recognizer_button =  customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Voice recognizer",
+                                                   fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                   image=self.recognizer_image, anchor="w", command = self.recognizer_button_event)
+        self.recognizer_button.grid(row=2, column=0, sticky="ew")
         
         # create home frame
         self.enroll_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -82,6 +88,9 @@ class App(customtkinter.CTk):
         self.beings = crud.getAllBeings()
         for being in self.beings:  # add items with images
             self.enroll_frame_scrollable_label_button_frame.add_item(item=being.name+" ( id: "+being.speaker_id+" )", name=being.name, ssn=being.ssn)
+            
+        # create second frame
+        self.recognizer_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         
         # self.enroll_frame_table_frame = customtkinter.CTkFrame(self.enroll_frame)
         # self.enroll_frame_table_frame.grid(row=8,column=0,columnspan=3, rowspan=2,sticky='W')
@@ -92,15 +101,29 @@ class App(customtkinter.CTk):
     def select_frame_by_name(self, name):
         # set button color for selected button
         self.enroll_user_button.configure(fg_color=("gray75", "gray25") if name == "enroll" else "transparent")
-        # self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "frame_2" else "transparent")
-        # self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "frame_3" else "transparent")
+        self.recognizer_button.configure(fg_color=("gray75", "gray25") if name == "recognizer" else "transparent")
 
         # show selected frame
         if name == "enroll":
-            self.enroll_frame.grid(row=0, column=1, sticky="nsew")    
+            self.enroll_frame.grid(row=0, column=1, sticky="nsew")
+            print('enroll frame')
+        else:
+            self.enroll_frame.grid_forget()
+            
+        if name == "recognizer":
+            self.recognizer_frame.grid(row=0, column=1, sticky="nsew")
+            print('recognizer frame')
+        else:
+            self.recognizer_frame.grid_forget()
+            
+    '''Event nhấn Enroll user button ở navigation bar'''     
     def enroll_user_button_event(self):
         self.select_frame_by_name('enroll')
         print('enroll user frame')
+    
+    '''Event nhấn Recognizer button ở navigation bar'''    
+    def recognizer_button_event(self):
+        self.select_frame_by_name('recognizer')
     
     """Event nhấn button upload *.flac files"""
     def enroll_frame_upload_enroll_files(self):
@@ -108,7 +131,7 @@ class App(customtkinter.CTk):
         self.enroll_frame_audio_files |= set(files)
         self.enroll_frame_upload_error.configure(text=f"{len(self.enroll_frame_audio_files)} audio files selected")
         # print("selected files:",self.enroll_frame_audio_files)
-        
+    
     """Event nhấn submit để start enrolling"""
     def enroll_frame_submit_enroll_user(self):
         self.enroll_frame_speaker_name = self.enroll_frame_entry_name.get()
