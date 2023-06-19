@@ -81,7 +81,7 @@ class App(customtkinter.CTk):
         self.enroll_frame_scrollable_label_button_frame.grid(row=8, column=0, padx=20, pady=0, sticky="ew")
         self.beings = crud.getAllBeings()
         for being in self.beings:  # add items with images
-            self.enroll_frame_scrollable_label_button_frame.add_item(item=being.name, name=being.name, ssn=being.ssn)
+            self.enroll_frame_scrollable_label_button_frame.add_item(item=being.name+" ( id: "+being.speaker_id+" )", name=being.name, ssn=being.ssn)
         
         # self.enroll_frame_table_frame = customtkinter.CTkFrame(self.enroll_frame)
         # self.enroll_frame_table_frame.grid(row=8,column=0,columnspan=3, rowspan=2,sticky='W')
@@ -153,7 +153,7 @@ class App(customtkinter.CTk):
         crud.createBeing(name=self.enroll_frame_speaker_name, speaker_id=self.enroll_frame_speaker_id, ssn=self.enroll_frame_speaker_ssn)
         crud.createEmbedding(embeddings=self.enroll_frame_clustering_results, speaker_ssn = self.enroll_frame_speaker_ssn)
         
-        self.enroll_frame_scrollable_label_button_frame.add_item(item=self.enroll_frame_speaker_name, 
+        self.enroll_frame_scrollable_label_button_frame.add_item(item=self.enroll_frame_speaker_name+" ( id: "+self.enroll_frame_speaker_id+" )", 
                                                                  name=self.enroll_frame_speaker_name, 
                                                                  ssn=self.enroll_frame_speaker_ssn)
         print(self.enroll_frame_speaker_ssn)
