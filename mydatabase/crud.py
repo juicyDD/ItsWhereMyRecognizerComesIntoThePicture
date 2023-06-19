@@ -18,6 +18,11 @@ def deleteBeing(ssn):
     local_session.delete(item_to_delete)
     local_session.commit()   
     
+def getBeingBySsn(ssn):
+    local_session=Session(bind=engine)
+    mybeing=local_session.query(Being).filter(Being.ssn==ssn).first()
+    return mybeing
+    
 def createEmbedding(embeddings, speaker_ssn):
     i=1
     local_session = Session(bind=engine)

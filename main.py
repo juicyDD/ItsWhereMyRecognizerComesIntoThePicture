@@ -13,6 +13,7 @@ from mydatabase import crud
 from mydatabase.models import Being, EmbeddingVector, Session, engine
 from scrollable_label_button_frame import ScrollableLabelButtonFrame
 from CTkMessagebox import ctkmessagebox
+from recognize_speaker import recognize_speaker
 class App(customtkinter.CTk):
     width = 900
     height = 600
@@ -211,6 +212,12 @@ class App(customtkinter.CTk):
         file_ = filedialog.askopenfilename(filetypes=[("FLAC files", '*.flac')])
         self.recognizer_frame_recognizing_audio = file_
         print(self.recognizer_frame_recognizing_audio)
+        target_speaker_ssn = recognize_speaker(self.recognizer_frame_recognizing_audio)
+        if target_speaker_ssn is None:
+            ctkmessagebox.CTkMessagebox(title="", message="Recognizing speaker is an imposter")
+        else:
+            speaker = crud.getBeingBySsn(target_speaker_ssn)
+            ctkmessagebox.CTkMessagebox(title="", message=f"Speaker found: {speaker.name}, ssn: {speaker.ssn}")
         # self.enroll_frame_audio_files |= set(files)
         # self.enroll_frame_upload_error.configure(text=f"{len(self.enroll_frame_audio_files)} audio files selected")
             

@@ -36,9 +36,9 @@ def recognize_speaker(audio_file):
     
     if max_similarity < GLOBAL_THRESHOLD:
         return None
-    return keys[0], max_similarity
+    return keys[0]
     
-if __name__ == '__main__':
-    recognize_speaker(r"D:\SpeechDataset\test\LibriSpeech\test-clean\672\122797\672-122797-0072.flac")
+# if __name__ == '__main__':
+#     recognize_speaker(r"D:\SpeechDataset\test\LibriSpeech\test-clean\672\122797\672-122797-0072.flac")
     
     
