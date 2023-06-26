@@ -12,6 +12,7 @@ class ScrollableLabelButtonFrame(customtkinter.CTkScrollableFrame):
         self.label_list = []
         self.button_list = []
         self.ssn_list = []
+        self.length = 0
 
     def add_item(self, item, name=None, ssn=None, image=None):
         print("add item", item)
@@ -19,11 +20,19 @@ class ScrollableLabelButtonFrame(customtkinter.CTkScrollableFrame):
         button = customtkinter.CTkButton(self, text="Remove Speaker", width=100, height=24)
         if self.command is not None:
             button.configure(command=lambda: self.command(name,ssn))
-        label.grid(row=len(self.label_list), column=0, pady=(0, 10), sticky="w")
-        button.grid(row=len(self.button_list), column=1, pady=(0, 10), padx=5)
         self.label_list.append(label)
         self.button_list.append(button)
         self.ssn_list.append(ssn)
+        self.length+=1
+        print('label list', self.label_list)
+        # label.grid(row=len(self.label_list), column=0, pady=(0, 10), sticky="w")
+        # button.grid(row=len(self.button_list), column=1, pady=(0, 10), padx=5)
+        label.grid(row=self.length, column=0, pady=(0, 10), sticky="w")
+        button.grid(row=self.length, column=1, pady=(0, 10), padx=5)
+
+
+
+        print(self.ssn_list)
 
     def remove_item(self, ssn_):
         for label, button, ssn in zip(self.label_list, self.button_list, self.ssn_list):
